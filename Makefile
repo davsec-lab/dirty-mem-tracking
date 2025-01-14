@@ -7,7 +7,7 @@ TARGET=test_sd
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(TARGET): test_sd.o sd.o
-	$(CXX) -pie test_sd.o sd.o -o test
+	$(CXX) -O0 -pie test_sd.o sd.o -o test
 
 clean:
 	rm *.o test
