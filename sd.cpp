@@ -5,23 +5,23 @@
 #define PAGE_SIZE 4096
 
 int readSoftDirty(int fd, unsigned long start_address, unsigned long end_address, std::vector<Address>& dirtyPageVec) {
-	int len = (end_address - start_address) / PAGE_SIZE; // read these pages
+	int len = (end_address - start_address) / PAGE_SIZE; // N number of pages
 	unsigned long index = (start_address / PAGE_SIZE) * sizeof(unsigned long);
-	char* Data = (char*) malloc(1024);
-	int pread_len = pread(fd, Data, len * sizeof(unsigned long), index);
-	int dirtyCount = 0;
+	unsigned long* pte_entries = (unsigned long*) malloc(sizeof(unsigned long) * len) ;
+	int pread_len = pread(fd, pte_entries, len * sizeof(unsigned long), index);
 	if (pread_len < 0) {
 		perror("pread");
 		exit(-1);
 	}
+
 	for (int i = 0; i < len ; i++) {
-		unsigned long entry = *(Data + i);
+		unsigned long entry = *(pte_entries + i);
 		if (entry >> 55 & 1) {
-			dirtyPageVec.push_back((Address)start_address);
+			dirtyPageVec.push_back((Address)(start_address + i*0x1000));
 		}                                         
 	}
-	free(Data);
-	return dirtyCount;
+	free(pte_entries);
+	return dirtyPageVec.size();
 }
 
 int getDirtyPages(std::vector<Address> dirtyPageVec) {

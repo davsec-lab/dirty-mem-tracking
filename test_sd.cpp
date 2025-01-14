@@ -1,4 +1,5 @@
 #include "sd.h"
+#include <sys/mman.h>
 #include <iostream>
 
 void add_memory_region(VMARegion* vma) {
@@ -7,7 +8,7 @@ void add_memory_region(VMARegion* vma) {
 }
 
 int main(void) {
-	char* test_region = (char*) malloc(2*0x1000);
+	char* test_region = (char*) mmap(nullptr, 2*0x1000, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 	VMARegion* vma = new VMARegion((Address)test_region,
 			(Address)test_region + 2*0x1000);
 	add_memory_region(vma);
@@ -15,7 +16,7 @@ int main(void) {
 	// Round 1
 	clear_and_start_recording();
 	// Write
-	char* pointer = test_region;
+	volatile char* pointer = test_region;
 	for (int i = 0; i < 100; i++) {
 		*pointer++ = 'a';
 	}
@@ -32,7 +33,7 @@ int main(void) {
 	
 	// Round 2
 	clear_and_start_recording();
-	char* another_buffer = (char*) malloc(2*0x1000);
+	volatile char* another_buffer = (char*) malloc(2*0x1000);
 	pointer = another_buffer;
 	for (int i = 0; i < 100; i++) {
 		*pointer++ = 'b';
