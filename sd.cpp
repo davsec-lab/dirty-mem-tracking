@@ -35,13 +35,16 @@ int getDirtyPages(std::vector<Address>& dirtyPageVec) {
 		exit(-1);
 	}
 
+	/*
 	uint64_t stackVar = 0;
 	// Let's skip the stack for now
 	asm volatile ("movq %%rbp, %0"
 			:"=r" (stackVar)::);
 
-	int num = 0;
 	//fprintf(stderr, "Stack var = %lx\n", stackVar);
+	*/
+
+	int num = 0;
 	TargetAppMemory* targetAppMemory = TargetAppMemory::getTargetAppMemory();
 	for (VMARegion* vma: targetAppMemory->getVMARegions()) {
 		int res = readSoftDirty(pagemapfd, vma->startAddr, vma->endAddr, dirtyPageVec);
