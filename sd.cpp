@@ -24,7 +24,7 @@ int readSoftDirty(int fd, unsigned long start_address, unsigned long end_address
 	return dirtyPageVec.size();
 }
 
-int getDirtyPages(std::vector<Address> dirtyPageVec) {
+int getDirtyPages(std::vector<Address>& dirtyPageVec) {
 	// Open the pagemap for the pid
 	char filename[] = "/proc/self/pagemap";
 
